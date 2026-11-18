@@ -2,95 +2,81 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-// Function to find the minimum operations to obtain
-// d liters in one jug
-int minSteps(int m, int n, int d) {
-  
-    // Check if the target is achievable
-    if (d > (m > n ? m : n)) return -1; 
+int langkahMinimal(int g1, int g2, int takar) {
+
+    if (takar > (g1 > g2 ? g1 : g2)) return -1; 
 	
-  	//  Queue for BFS: each state is (jug1, jug2, steps)
     int q[10000][3], front = 0, rear = 0;
 
-    // For tracking the visited states, initialized to false
-    bool visited[m + 1][n + 1];
-    for (int i = 0; i <= m; i++) {
-        for (int j = 0; j <= n; j++) {
-            visited[i][j] = false;
+    bool terkunjungi[g1 + 1][g2 + 1];
+    for (int i = 0; i <= g1; i++) {
+        for (int j = 0; j <= g2; j++) {
+            terkunjungi[i][j] = false;
         }
     }
 
-    // Start with both jugs empty, pushing the initial
-    // state (0, 0, 0) 
     q[rear][0] = 0;
     q[rear][1] = 0;
     q[rear][2] = 0;
     rear++;
-    visited[0][0] = true;
+    terkunjungi[0][0] = true;
 
     while (front != rear) {
       
-        // Extract the front of the queue
-        int jug1 = q[front][0];
-        int jug2 = q[front][1];
-        int steps = q[front][2];
+        int gelas1 = q[front][0];
+        int gelas2 = q[front][1];
+        int langkah = q[front][2];
         front++;
 
-        if (jug1 == d || jug2 == d) return steps;
+        if (gelas1 == takar || gelas2 == takar) return langkah;
 
-        // 1: Fill jug1 to its maximum capacity
-        if (!visited[m][jug2]) {
-            visited[m][jug2] = true;
-            q[rear][0] = m;
-            q[rear][1] = jug2;
-            q[rear][2] = steps + 1;
+        if (!terkunjungi[g1][gelas2]) {
+            terkunjungi[g1][gelas2] = true;
+            q[rear][0] = g1;
+            q[rear][1] = gelas2;
+            q[rear][2] = langkah + 1;
             rear++;
         }
 
-        // 2: Fill jug2 to its maximum capacity
-        if (!visited[jug1][n]) {
-            visited[jug1][n] = true;
-            q[rear][0] = jug1;
-            q[rear][1] = n;
-            q[rear][2] = steps + 1;
+        if (!terkunjungi[gelas1][g2]) {
+            terkunjungi[gelas1][g2] = true;
+            q[rear][0] = gelas1;
+            q[rear][1] = g2;
+            q[rear][2] = langkah + 1;
             rear++;
         }
 
-        // 3: Empty jug1
-        if (!visited[0][jug2]) {
-            visited[0][jug2] = true;
+        if (!terkunjungi[0][gelas2]) {
+            terkunjungi[0][gelas2] = true;
             q[rear][0] = 0;
-            q[rear][1] = jug2;
-            q[rear][2] = steps + 1;
+            q[rear][1] = gelas2;
+            q[rear][2] = langkah + 1;
             rear++;
         }
 
-        // 4: Empty jug2
-        if (!visited[jug1][0]) {
-            visited[jug1][0] = true;
-            q[rear][0] = jug1;
+        if (!terkunjungi[gelas1][0]) {
+            terkunjungi[gelas1][0] = true;
+            q[rear][0] = gelas1;
             q[rear][1] = 0;
-            q[rear][2] = steps + 1;
+            q[rear][2] = langkah + 1;
             rear++;
         }
 
-        // 5: Pour jug1 into jug2
-        int pour1to2 = jug1 < (n - jug2) ? jug1 : (n - jug2);
-        if (!visited[jug1 - pour1to2][jug2 + pour1to2]) {
-            visited[jug1 - pour1to2][jug2 + pour1to2] = true;
-            q[rear][0] = jug1 - pour1to2;
-            q[rear][1] = jug2 + pour1to2;
-            q[rear][2] = steps + 1;
+        int tuang1ke2 = gelas1 < (g2 - gelas2) ? gelas1 : (g2 - gelas2);
+        if (!terkunjungi[gelas1 - tuang1ke2][gelas2 + tuang1ke2]) {
+            terkunjungi[gelas1 - tuang1ke2][gelas2 + tuang1ke2] = true;
+            q[rear][0] = gelas1 - tuang1ke2;
+            q[rear][1] = gelas2 + tuang1ke2;
+            q[rear][2] = langkah + 1;
             rear++;
         }
 
-        // 6: Pour jug2 into jug1
-        int pour2to1 = jug2 < (m - jug1) ? jug2 : (m - jug1);
-        if (!visited[jug1 + pour2to1][jug2 - pour2to1]) {
-            visited[jug1 + pour2to1][jug2 - pour2to1] = true;
-            q[rear][0] = jug1 + pour2to1;
-            q[rear][1] = jug2 - pour2to1;
-            q[rear][2] = steps + 1;
+        int tuang2ke1 = gelas2 < (g1 - gelas1) ? gelas2 : (g1 - gelas1);
+        if (!terkunjungi[gelas1 + tuang2ke1][gelas2 - tuang2ke1]) {
+            terkunjungi[gelas1 + tuang2ke1][gelas2 - tuang2ke1] = true;
+            q[rear][0] = gelas1 + tuang2ke1;
+            q[rear][1] = gelas2 - tuang2ke1;
+            q[rear][2] = langkah + 1;
             rear++;
         }
     }
@@ -100,10 +86,9 @@ int minSteps(int m, int n, int d) {
 
 int main() {
   
-    int m, n, d;
-    scanf("%d %d %d", &m, &n, &d);
-    //int m = 2, n = 3, d = 1;
-    int result = minSteps(m, n, d);
+    int g1, g2, takar;
+    scanf("%d %d %d", &g1, &g2, &takar);
+    int result = langkahMinimal(g1, g2, takar);
     printf("%d\n", result);
     return 0;
 }
