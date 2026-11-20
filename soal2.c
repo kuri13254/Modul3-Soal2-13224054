@@ -92,3 +92,10 @@ int main() {
     printf("%d\n", result);
     return 0;
 }
+
+/*
+REFERENSI
+[1] https://www.geeksforgeeks.org/c/operators-in-c/
+[2] https://www.geeksforgeeks.org/dsa/two-water-jug-puzzle/#approach-1
+[3] https://www.w3schools.com/c/c_user_input.php
+*/
